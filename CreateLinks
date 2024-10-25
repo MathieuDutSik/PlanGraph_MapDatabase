@@ -1,0 +1,43 @@
+#!/usr/bin/perl -w
+
+$order="rm -rf MapDatabase && mkdir MapDatabase";
+print "order=".$order."\n";
+if (system($order) != 0) {
+    die "Error doing listing";
+}
+
+
+
+@DIR=("MapDatabase_icosahedrite", "MapDatabase_0123", "MapDatabase_specific", "MapDatabase_hedrites", "MapDatabase_generationEXHAUST");
+
+$nbDir=scalar(@DIR);
+
+for ($iDir=1; $iDir<=$nbDir; $iDir++)
+{
+    $eDir=$DIR[$iDir-1];
+    #
+    $TmpFile="/tmp/ListMapDatabase";
+    $order="ls ".$eDir." > ".$TmpFile;
+    print "order=".$order."\n";
+    if (system($order) != 0) {
+	die "Error doing listing";
+    }
+    open(INF, $TmpFile) or die "impossible to open ".$TmpFile;
+    @B=<INF>;
+    close(INF);
+    #
+    $nbEnt=scalar(@B);
+    for ($iEnt=1; $iEnt<=$nbEnt; $iEnt++)
+    {
+	$_=$B[$iEnt-1];
+	s/\n//;
+	$eEnt=$_;
+	#
+	$order="(cd MapDatabase && ln -sf ../".$eDir."/".$eEnt.")";
+	print "order=".$order."\n";
+	if (system($order) != 0) {
+	    die "Error doing linking";
+	}
+    }
+}
+
